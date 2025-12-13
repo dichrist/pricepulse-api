@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: pricepulse
+      POSTGRES_USER: pricepulse
+      POSTGRES_PASSWORD: pricepulse
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  api:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile
+    working_dir: /var/www/html
+    volumes:
+      - ..:/var/www/html
+    ports:
+      - "8000:8000"
+    command: php -S 0.0.0.0:8000 -t public
+    depends_on:
+      - db
+      - redis
